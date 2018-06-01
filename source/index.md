@@ -2,13 +2,11 @@
 title: API Reference
 
 language_tabs:
-  - bash
-  - ruby
-  - python
+  - code
 
 toc_footers:
-  - <a href='#'>Sign Up for a Developer Key</a>
-  - <a href='http://github.com/mpociot/whiteboard'>Documentation Powered by Whiteboard</a>
+  - <a href='mailto:august@unloc.ai'>Apply for authorization token</a>
+  - <a href='https://unloc.no'>unloc.no</a>
 
 includes:
   - errors
@@ -16,152 +14,135 @@ includes:
 search: true
 ---
 
-# Introduction
+# UNLOC API Documentation
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+UNLOC is a system that enables key sharing and in-home deliveries of goods and services.
 
-We have language bindings in Shell, Ruby, and Python! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+UNLOC creates time-limited digital keys, which are forwarded to electronic locks installed in end-users’ homes. The digital keys can be granted to merchants and service providers (partners).
 
-This example API documentation page was created with [Whiteboard](http://github.com/mpociot/whiteboard). Feel free to edit it and use it as a base for your own API's documentation.
+The UNLOC API allows partners to create digital keys programmatically.
 
-# Authentication
+## Authentication
 
-> To authorize, use this code:
+UNLOC uses authorization tokens to allow access to the API. An authorization token represents you as an UNLOC partner.
 
-```ruby
-require 'kittn'
+The authorization token must be included in all API requests to the server in an Authorization header:
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-```
+`Authorization: Bearer TOKEN`
 
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-```
-
-```bash
-# With shell, you can just pass the correct header with each request
-curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
-```
-
-> Make sure to replace `meowmeowmeow` with your API key.
-
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
-
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
-
-`Authorization: meowmeowmeow`
-
-<aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
+<aside class="notice">You must replace <code>TOKEN</code> with your own authorization tokens.
 </aside>
 
-# Kittens
+## Invoking the API
 
-## Get All Kittens
+Request data must be supplied as a JSON object in the request body. Response data will be returned as a JSON object in the response body.
 
-```ruby
-require 'kittn'
+Timestamps must be in UTC in ISO-8601 format. For example: `2018-01-28T18:00:00Z`
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
+# Locks
+
+## Get All Locks
+
+```code
+curl https://api.unloc.app/v1/locks -H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe"
 ```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
-
-```bash
-curl "http://example.com/api/kittens"
-  -H "Authorization: meowmeowmeow"
-```
-
-> The above command returns JSON structured like this:
+> The JSON response is an array of lock data.
 
 ```json
 [
-  {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
-  }
+    {
+        "auth": "opt-out",
+        "data": "customer-001",
+        "id": "danalock-00:00:00:00:00:01",
+        "name": "Hjemme"
+    },
+    {
+        "auth": "opt-out",
+        "data": "customer-001",
+        "id": "doora-00:00:00:00:00:01",
+        "name": "Hovedinngang"
+    }
 ]
 ```
 
-This endpoint retrieves all kittens.
+`GET https://api.unloc.app/v1/locks`
 
-### HTTP Request
+Get all locks that you can create keys for. Lock owners can selectively authorize partners to issue digital keys for their locks by selecting either `opt-in`, `opt-out`, or `deny` in the UNLOC app.
 
-`GET http://example.com/api/kittens`
+The response lock data contains the following fields:
 
-### Query Parameters
+Field  | Meaning
+---------- | -------
+id | The ID of the lock
+name | The owner-assigned name of the lock
+auth | Either `opt-in` or`opt-out`
+data | Partner-specific (your) data associated with this lock
 
-Parameter | Default | Description
---------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
+If a lock is marked as `opt-in`, then you need to be aware that the key cannot be used unless the lock owner has accepted the key in the UNLOC app.
 
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
+The `data` field contains data that is only visible to you as a partner. For example, it can be useful to associate a customer ID or similar to the lock so that you can recognize your customers' locks.
 
-## Get a Specific Kitten
 
-```ruby
-require 'kittn'
+# Keys
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
-```
+## Create a Key
 
-```python
-import kittn
+```code
+curl -X POST -H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe" -H 'Content-Type: application/json' -d '{"lockId":"danalock-d4:b5:8f:59:47:79","start":"2018-06-01T20:30:00Z","end":"2018-06-01T21:00:00Z","msn":"+4790000000"}' https://api.unloc.app/v1/keys
+````
 
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```bash
-curl "http://example.com/api/kittens/2"
-  -H "Authorization: meowmeowmeow"
-```
-
-> The above command returns JSON structured like this:
+> The JSON response is the ID of the newly created key.
 
 ```json
 {
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
+  "id" : "466b1350abc-abcdef-danalock-d4:b5:8f:59:47:79"
+}
+```
+Digital keys are time-limited and assigned to exactly one person via their mobile phone number. All key use is logged in the UNLOC backend.
+
+Partners can choose to assign a secret token to a key. The partner can then later use the secret token to access the key anonymously via a URL, using UNLOC App Switch.
+
+`POST https://api.unloc.app/v1/keys`
+
+The request body must include the following fields:
+
+Field  | Meaning
+---------- | -------
+lockId | The ID of the lock that the key should be created for
+start | When the key should begin to be valid (ISO-8601 datetime)
+end | When the key should stop being valid (ISO-8601 datetime)
+msn | Mobile phone number of the recipient of the key
+secretToken | A secret token (at least 32 characters) that the key can be access with later
+
+Note that `msn` and `secretToken` are mutually exclusive.
+
+## Access Key By Secret Token
+
+A key that has been created with a `secretToken` can be used on any mobile phone that has the UNLOC app installed. To use the key, craft a URL with the following format:
+
+`ai.unloc.unloc://use-key?t=<secretToken>&r=<return_uri>&n=<partner name>`
+
+Tapping the URL will bring up the UNLOC app and make the key available for use. Dismissing key screen in the UNLOC app will bring the user back to the originating app.
+
+The URL has the following query parameters:
+
+Parameter | Meaning
+------ | ------
+t | The secretToken used to create the key
+r | The return URI that the UNLOC app will open when the key screen is dismissed
+n | The name of the partner (will be displayed in the UNLOC app)
+
+## Revoke a Key
+
+```code
+curl -X DELETE -H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe" https://api.unloc.app/v1/keys/466b1350abc-abcdef-danalock-d4:b5:8f:59:47:79```
+
+> JSON response:
+
+```json
+{
+  "response": "OK"
 }
 ```
 
-This endpoint retrieves a specific kitten.
-
-<aside class="warning">If you're not using an administrator API key, note that some kittens will return 403 Forbidden if they are hidden for admins only.</aside>
-
-### HTTP Request
-
-`GET http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
+Keys can be revoked. Revoked keys become immediately unusable.

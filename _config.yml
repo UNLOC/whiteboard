@@ -2,16 +2,16 @@
 ## Docs: https://hexo.io/docs/configuration.html
 
 # Site
-title: API Documentation
+title: UNLOC API Documentation
 subtitle:
 description:
-author: John Doe
+author: August Flatby
 language:
 timezone:
 
 # URL (Used when deploying)
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com
+url: https://unloc.ai
 root: /
 
 # Directory
