@@ -14,17 +14,17 @@ includes:
 search: true
 ---
 
-# UNLOC API Documentation
+# Unloc API Documentation
 
-UNLOC is a system that enables key sharing and in-home deliveries of goods and services.
+Unloc is a system that enables key sharing and in-home deliveries of goods and services.
 
-UNLOC creates time-limited digital keys, which are forwarded to electronic locks installed in end-users’ homes. The digital keys can be granted to merchants and service providers (partners).
+Unloc creates time-limited digital keys, which are forwarded to electronic locks installed in end-users’ homes. The digital keys can be granted to merchants and service providers (partners).
 
-The UNLOC API allows partners to create digital keys programmatically.
+The Unloc API allows partners to create digital keys programmatically.
 
 ## Authentication
 
-UNLOC uses authorization tokens to allow access to the API. An authorization token represents you as an UNLOC partner.
+Unloc uses authorization tokens to allow access to the API. An authorization token represents you as an Unloc partner.
 
 The authorization token must be included in all API requests to the server in an Authorization header:
 
@@ -44,7 +44,7 @@ Timestamps must be in UTC in ISO-8601 format. For example: `2018-01-28T18:00:00Z
 ## Get All Locks
 
 ```code
-curl https://api.unloc.app/v1/locks -H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe"
+curl https://api.unloc.app/v1/partners/abcpartner/locks -H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe"
 ```
 > The JSON response is an array of lock data.
 
@@ -65,9 +65,9 @@ curl https://api.unloc.app/v1/locks -H "Authorization: Bearer rGUM658NwnnwrT4xZX
 ]
 ```
 
-`GET https://api.unloc.app/v1/locks`
+`GET https://api.unloc.app/v1/partners/<Partner ID>/locks`
 
-Get all locks that you can create keys for. Lock owners can selectively authorize partners to issue digital keys for their locks by selecting either `opt-in`, `opt-out`, or `deny` in the UNLOC app.
+Get all locks that you can create keys for. Lock owners can selectively authorize partners to issue digital keys for their locks by selecting either `opt-in`, `opt-out`, or `deny` in the Unloc app.
 
 The response lock data contains the following fields:
 
@@ -78,7 +78,7 @@ name | The owner-assigned name of the lock
 auth | Either `opt-in` or`opt-out`
 data | Partner-specific (your) data associated with this lock
 
-If a lock is marked as `opt-in`, then you need to be aware that the key cannot be used unless the lock owner has accepted the key in the UNLOC app.
+If a lock is marked as `opt-in`, then you need to be aware that the key cannot be used unless the lock owner has accepted the key in the Unloc app.
 
 The `data` field contains data that is only visible to you as a partner. For example, it can be useful to associate a customer ID or similar to the lock so that you can recognize your customers' locks.
 
@@ -88,7 +88,7 @@ The `data` field contains data that is only visible to you as a partner. For exa
 ## Create a Key
 
 ```code
-curl -X POST -H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe" -H 'Content-Type: application/json' -d '{"lockId":"danalock-d4:b5:8f:59:47:79","start":"2018-06-01T20:30:00Z","end":"2018-06-01T21:00:00Z","msn":"+4790000000"}' https://api.unloc.app/v1/keys
+curl -X POST -H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe" -H 'Content-Type: application/json' -d '{"lockId":"danalock-d4:b5:8f:59:47:79","start":"2018-06-01T20:30:00Z","end":"2018-06-01T21:00:00Z","msn":"+4790000000"}' https://api.unloc.app/v1/partners/abcpartner/keys
 ````
 
 > The JSON response is the ID of the newly created key.
@@ -98,11 +98,11 @@ curl -X POST -H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe" -H 'Con
   "id" : "466b1350abc-abcdef-danalock-d4:b5:8f:59:47:79"
 }
 ```
-Digital keys are time-limited and assigned to exactly one person via their mobile phone number. All key use is logged in the UNLOC backend.
+Digital keys are time-limited and assigned to exactly one person via their mobile phone number. All key use is logged in the Unloc backend.
 
-Partners can choose to assign a secret token to a key. The partner can then later use the secret token to access the key anonymously via a URL, using UNLOC App Switch.
+Partners can choose to assign a secret token to a key. The partner can then later use the secret token to access the key anonymously via a URL, using Unloc App Switch.
 
-`POST https://api.unloc.app/v1/keys`
+`POST https://api.unloc.app/v1/partners/<Partner ID>/keys`
 
 The request body must include the following fields:
 
@@ -118,19 +118,19 @@ Note that `msn` and `secretToken` are mutually exclusive.
 
 ## Access Key By Secret Token
 
-A key that has been created with a `secretToken` can be used on any mobile phone that has the UNLOC app installed. To use the key, craft a URL with the following format:
+A key that has been created with a `secretToken` can be used on any mobile phone that has the Unloc PRO app installed. To use the key, craft a URL with the following format:
 
-`ai.unloc.unloc://use-key?t=<secretToken>&r=<return_uri>&n=<partner name>`
+`ai.unloc.pro://use-key?t=<secretToken>&r=<return_uri>&n=<partner name>`
 
-Tapping the URL will bring up the UNLOC app and make the key available for use. Dismissing key screen in the UNLOC app will bring the user back to the originating app.
+Tapping the URL will bring up the Unloc PRO app and make the key available for use. Dismissing key screen in the Unloc PRO app will bring the user back to the originating app.
 
 The URL has the following query parameters:
 
 Parameter | Meaning
 ------ | ------
 t | The secretToken used to create the key
-r | The return URI that the UNLOC app will open when the key screen is dismissed
-n | The name of the partner (will be displayed in the UNLOC app)
+r | The return URI that the Unloc app will open when the key screen is dismissed
+n | The display name of the partner (will be displayed to the l in the Unloc app)
 
 ## Revoke a Key
 
@@ -146,3 +146,37 @@ curl -X DELETE -H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe" https
 ```
 
 Keys can be revoked. Revoked keys become immediately unusable.
+
+## Get key details
+
+```code
+curl https://api.unloc.app/v1/partners/abcpartner/key/abc-1234 -H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe"
+```
+> The JSON response is the key with usage data (events).
+
+```json
+{
+    "id": "4656efbe41-helthjem-danalock-d4:b5:8f:59:47:79",
+    "lockId": "danalock-d4:b5:8f:59:47:79",
+    "state": "revoked",
+    "start": "2018-06-05T11:00:00.000Z",
+    "end": "2018-06-10T17:00:00.000Z",
+    "events": [
+        {
+            "action": "locked",
+            "created": "2018-06-05T11:36:49.235Z",
+            "msn": "+4792443609",
+            "name": "August Flatby"
+        },
+        {
+            "action": "unlocked",
+            "created": "2018-06-05T12:37:47.024Z",
+            "msn": "",
+            "name": "Partner X"
+        },
+    ]
+}
+
+```
+
+`GET https://api.unloc.app/v1/partners/<Partner ID>/locks`

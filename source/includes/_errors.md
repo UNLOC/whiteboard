@@ -5,8 +5,8 @@ The UNLOC API uses the following error codes:
 Error Code | Meaning
 ---------- | -------
 400 | Bad Request -- Your request is malformed
-401 | Authentication failure -- Your API key is wrong
-403 | Forbidden -- You do not have permissions to act on the resource
+401 | Authentication failure -- You do not have permissions to act on the resource
+403 | Forbidden -- Several requests with invalid credentials within a short time span has been detected: Authentication attempts (even with valid credentials) will be temporarily rejected.
 404 | Not Found -- The lock/key was not found
 405 | Method Not Allowed -- You tried to access a resource with an invalid method
 406 | Not Acceptable -- You requested a format that isn't json
