@@ -1,5 +1,5 @@
 ---
-title: API Reference
+title: Unloc API Reference v1.0
 
 language_tabs:
   - code
@@ -150,13 +150,13 @@ Keys can be revoked. Revoked keys become immediately unusable.
 ## Get key details
 
 ```code
-curl https://api.unloc.app/v1/partners/abcpartner/key/abc-1234 -H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe"
+curl https://api.unloc.app/v1/partners/abcpartner/key/4656efbe41-danalock-d4:b5:8f:59:47:79 -H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe"
 ```
 > The JSON response is the key with usage data (events).
 
 ```json
 {
-    "id": "4656efbe41-helthjem-danalock-d4:b5:8f:59:47:79",
+    "id": "4656efbe41-danalock-d4:b5:8f:59:47:79",
     "lockId": "danalock-d4:b5:8f:59:47:79",
     "state": "revoked",
     "start": "2018-06-05T11:00:00.000Z",
