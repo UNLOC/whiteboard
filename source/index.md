@@ -166,6 +166,23 @@ function appSwitchUrl(keyId) {
     return `ai.unloc.pro://use-key?${params}&s=${s}`;
 }
 ```
+```ruby
+# ruby example
+# generate app switch url with hmac signature
+
+require 'openssl'
+
+hmac_secret = 'secret-123'
+return_uri = 'myapp://'
+partner_id = 'partner-x'
+key_id = '117ec32d-5ac3-422b-82de-cbb64540bffd'
+
+def app_scheme_url(key_id)
+    params = "id=#{key_id}&r=#{return_uri}&n=#{partner_id}"
+    s = OpenSSL::HMAC.hexdigest('SHA256', hmac_secret, params)
+    return "ai.unloc.pro://use-key?#{params}&s=#{s}"
+end
+```
 
 The URL is authenticated with an HMAC-SHA256 signature. The signature is produced with the partner's HMAC secret.
 
