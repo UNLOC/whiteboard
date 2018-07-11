@@ -5,7 +5,7 @@ language_tabs:
   - code
 
 toc_footers:
-  - <a href='mailto:august@unloc.ai'>Apply for authorization token</a>
+  - <a href='mailto:august@unloc.ai'>Apply for API key</a>
   - <a href='https://unloc.no'>unloc.no</a>
 
 includes:
@@ -24,13 +24,13 @@ The Unloc API allows partners to create digital keys programmatically.
 
 ## Authentication
 
-Unloc uses authorization tokens to allow access to the API. An authorization token represents you as an Unloc partner.
+Unloc partners use API keys to get access to the API.
 
-The authorization token must be included in all API requests to the server in an Authorization header:
+The API key must be included in all API requests to the server in an Authorization header:
 
-`Authorization: Bearer TOKEN`
+`Authorization: Bearer <API KEY>`
 
-<aside class="notice">You must replace <code>TOKEN</code> with your own authorization tokens.
+<aside class="notice">You must replace <code>API KEY</code> with your own API key.
 </aside>
 
 ## Invoking the API
@@ -44,25 +44,28 @@ Timestamps must be in UTC in ISO-8601 format. For example: `2018-01-28T18:00:00Z
 ## Get All Locks
 
 ```code
-curl https://api.unloc.app/v1/partners/abcpartner/locks -H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe"
+curl https://api.unloc.app/v1/partners/abcpartner/locks \
+-H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe"
 ```
-> The JSON response is an array of lock data.
+> The JSON response object contains an array of lock data.
 
 ```json
-[
-    {
-        "auth": "opt-out",
-        "data": "customer-001",
-        "id": "danalock-00:00:00:00:00:01",
-        "name": "Hjemme"
-    },
-    {
-        "auth": "opt-out",
-        "data": "customer-001",
-        "id": "doora-00:00:00:00:00:01",
-        "name": "Hovedinngang"
-    }
-]
+{
+    "locks": [
+        {
+            "auth": "opt-out",
+            "data": "customer-001",
+            "id": "danalock-00:00:00:00:00:01",
+            "name": "Hjemme"
+        },
+        {
+            "auth": "opt-out",
+            "data": "customer-001",
+            "id": "doora-00:00:00:00:00:01",
+            "name": "Hovedinngang"
+        }
+    ]
+}
 ```
 
 `GET https://api.unloc.app/v1/partners/<Partner ID>/locks`
@@ -88,75 +91,102 @@ The `data` field contains data that is only visible to you as a partner. For exa
 ## Create a Key
 
 ```code
-curl -X POST -H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe" -H 'Content-Type: application/json' -d '{"lockId":"danalock-d4:b5:8f:59:47:79","start":"2018-06-01T20:30:00Z","end":"2018-06-01T21:00:00Z","msn":"+4790000000"}' https://api.unloc.app/v1/partners/abcpartner/keys
-````
+curl -X POST \
+-H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe" \
+-H 'Content-Type: application/json' \
+-d '{"lockId":"danalock-d4:b5:8f:59:47:79","start":"2018-06-01T20:30:00Z","end":"2018-06-01T21:00:00Z","msn":"+4790000000"}' \
+https://api.unloc.app/v1/partners/abcpartner/keys
+```
 
-> The JSON response is the ID of the newly created key.
+> The JSON response is the ID of the newly created key. The ID is a cryptographically secure UUID.
 
 ```json
 {
-  "id" : "466b1350abc-abcdef-danalock-d4:b5:8f:59:47:79"
+  "id" : "117ec32d-5ac3-422b-82de-cbb64540bffd"
 }
 ```
 Digital keys are time-limited and assigned to exactly one person via their mobile phone number. All key use is logged in the Unloc backend.
 
-Partners can choose to assign a secret token to a key. The partner can then later use the secret token to access the key anonymously via a URL, using Unloc App Switch.
-
 `POST https://api.unloc.app/v1/partners/<Partner ID>/keys`
 
-The request body must include the following fields:
+The request body must contain the following fields:
 
 Field  | Meaning
 ---------- | -------
 lockId | The ID of the lock that the key should be created for
 start | When the key should begin to be valid (ISO-8601 datetime)
 end | When the key should stop being valid (ISO-8601 datetime)
-msn | Mobile phone number of the recipient of the key
-secretToken | A secret token (at least 32 characters) that the key can be access with later
+msn | Mobile phone number of the recipient of the key, or null if the key is not assigned to a specific person. If `msn` is set to null, then the key can only be accessed via the Unloc Partner app using App Switch.
 
-Note that `msn` and `secretToken` are mutually exclusive.
+## Access Key via App Switch
 
-## Access Key By Secret Token
+> Example App Switch URL
 
-A key that has been created with a `secretToken` can be used on any mobile phone that has the Unloc PRO app installed. To use the key, craft a URL with the following format:
+```code
+ai.unloc.pro://use-key?id=86477029-5db2-4bc4-bdf9-eaf2e9aad759&r=myapp://&n=acbpartner&s=09ffe07e72343ebe456b2e65618f99fb74691e4c0323d0f98dba139d6bca83ba
+```
 
-`ai.unloc.pro://use-key?t=<secretToken>&r=<return_uri>&n=<partner name>`
+Partner keys can be used on any mobile device that has the Unloc Partner app installed. To use the key, craft a URL with the following format:
 
-Tapping the URL will bring up the Unloc PRO app and make the key available for use. Dismissing key screen in the Unloc PRO app will bring the user back to the originating app.
+`ai.unloc.pro://use-key?id=<key ID>&r=<return URL>&n=<partner id>&s=<HMAC>`
 
-The URL has the following query parameters:
+Tapping the URL on a mobile device will bring up the Unloc Partner app and make the key available for use. Dismissing the key screen in the Unloc Partner app will bring the user back to the originating app, via the `return URL`.
+
+The App Switch URL has the following query parameters:
 
 Parameter | Meaning
 ------ | ------
-t | The secretToken used to create the key
+id | The key ID
 r | The return URI that the Unloc app will open when the key screen is dismissed
-n | The display name of the partner (will be displayed to the l in the Unloc app)
+n | The partner ID
+s | HMAC-SHA256 signature
 
-## Revoke a Key
+The Unloc Partner app is currently only available in pre-alpha for Android devices.
+<a href='https://play.google.com/store/apps/details?id=ai.unloc.pro&utm_source=devdocs&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img width="150" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
 
-```code
-curl -X DELETE -H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe" https://api.unloc.app/v1/keys/466b1350abc-abcdef-danalock-d4:b5:8f:59:47:79```
+### HMAC
 
-> JSON response:
+```node
+// node.js example
+// generate app switch url with hmac signature
 
-```json
-{
-  "response": "OK"
+const crypto = require('crypto');
+const hmacSecret = 'secret-123';
+const hmac = crypto.createHmac('sha256', hmacSecret);
+const returnUri = 'myapp://';
+const partnerId = 'partner-x';
+
+const keyId = '117ec32d-5ac3-422b-82de-cbb64540bffd';
+console.log(appSwitchUrl(keyId));
+
+function appSwitchUrl(keyId) {
+    const params = `id=${keyId}&r=${returnUri}&n=${partnerId}`;
+    hmac.update(params);
+    const s = hmac.digest('hex');
+    return `ai.unloc.pro://use-key?${params}&s=${s}`;
 }
 ```
 
-Keys can be revoked. Revoked keys become immediately unusable.
+The URL is authenticated with an HMAC-SHA256 signature. The signature is produced with the partner's HMAC secret.
+
+<aside class="notice">Partners receive their HMAC secret when they sign up with Unloc.</aside>
+
+The HMAC is generated from the query parameters as follows:
+
+`HMAC_SHA256(hmacSecret, "id=<Key ID>&r=<return URI>&n=<partner ID>")`
 
 ## Get key details
 
 ```code
-curl https://api.unloc.app/v1/partners/abcpartner/key/4656efbe41-danalock-d4:b5:8f:59:47:79 -H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe"
+curl -H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe" \
+https://api.unloc.app/v1/partners/abcpartner/keys/117ec32d-5ac3-422b-82de-cbb64540bffd
+
 ```
 > The JSON response is the key with usage data (events).
 
 ```json
 {
-    "id": "4656efbe41-danalock-d4:b5:8f:59:47:79",
+    "id": "117ec32d-5ac3-422b-82de-cbb64540bffd",
     "lockId": "danalock-d4:b5:8f:59:47:79",
     "state": "revoked",
     "start": "2018-06-05T11:00:00.000Z",
@@ -179,4 +209,33 @@ curl https://api.unloc.app/v1/partners/abcpartner/key/4656efbe41-danalock-d4:b5:
 
 ```
 
-`GET https://api.unloc.app/v1/partners/<Partner ID>/locks`
+Partners can request key details. Details include the current state of the key, and an array of key usage events.
+
+Keys can be in either of the following states.
+
+State | Meaning
+------ | ------
+creating | The key is being created
+scheduled | The key will become active (at the `start` time)
+active | The key is currently active
+expired | The key is not longer active (it expired at the `end` time)
+error | The key is in an error state
+revoked | The key has been revoked (by its creator or by the lock owner)
+
+## Revoke a Key
+
+```code
+curl -X DELETE \
+-H "Authorization: Bearer rGUM658NwnnwrT4xZXVQGia3o2pQJwYe" \
+https://api.unloc.app/v1/partners/abcpartner/keys/117ec32d-5ac3-422b-82de-cbb64540bffd
+```
+
+> JSON response:
+
+```json
+{
+  "response": "OK"
+}
+```
+
+Keys can be revoked. Revoked keys become immediately unusable. Note that revoked keys are not deleted from the database, they only get their `state` changed to `revoked`.
