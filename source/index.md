@@ -177,7 +177,7 @@ return_uri = 'myapp://'
 partner_id = 'partner-x'
 key_id = '117ec32d-5ac3-422b-82de-cbb64540bffd'
 
-def app_scheme_url(key_id)
+def app_switch_url(key_id)
     params = "id=#{key_id}&r=#{return_uri}&n=#{partner_id}"
     s = OpenSSL::HMAC.hexdigest('SHA256', hmac_secret, params)
     return "ai.unloc.pro://use-key?#{params}&s=#{s}"
