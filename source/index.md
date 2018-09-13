@@ -116,7 +116,7 @@ Field  | Meaning
 lockId | The ID of the lock that the key should be created for
 start | When the key should begin to be valid (ISO-8601 datetime)
 end | When the key should stop being valid (ISO-8601 datetime)
-msn | Mobile phone number of the recipient of the key, or null if the key is not assigned to a specific person. If `msn` is set to null, then the key can only be accessed via the Unloc Partner app using App Switch.
+msn | Mobile phone number of the recipient of the key, or null if the key is not assigned to a specific person. If `msn` is set to null, then the key can only be accessed via the Unloc Work app using App Switch.
 
 ## Access Key via App Switch
 
@@ -130,7 +130,7 @@ Partner keys can be used on any mobile device that has the Unloc Partner app ins
 
 `ai.unloc.pro://use-key?id=<key ID>&r=<return URL>&n=<partner id>&s=<HMAC>`
 
-Tapping the URL on a mobile device will bring up the Unloc Partner app and make the key available for use. Dismissing the key screen in the Unloc Partner app will bring the user back to the originating app, via the `return URL`.
+Tapping the URL on a mobile device will bring up the Unloc Work app and make the key available for use. Dismissing the key screen in the Unloc Work app will bring the user back to the originating app, via the `return URL`.
 
 The App Switch URL has the following query parameters:
 
@@ -141,7 +141,7 @@ r | The return URI that the Unloc app will open when the key screen is dismissed
 n | The partner ID
 s | HMAC-SHA256 signature
 
-The Unloc Partner app is currently only available in pre-alpha for Android devices.
+The Unloc Work app is currently only available in pre-alpha for Android devices.
 <a href='https://play.google.com/store/apps/details?id=ai.unloc.pro&utm_source=devdocs&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img width="150" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
 
 ### HMAC
