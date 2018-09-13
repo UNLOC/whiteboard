@@ -141,8 +141,17 @@ r | The return URI that the Unloc app will open when the key screen is dismissed
 n | The partner ID
 s | HMAC-SHA256 signature
 
-The Unloc Work app is currently only available in pre-alpha for Android devices.
-<a href='https://play.google.com/store/apps/details?id=ai.unloc.pro&utm_source=devdocs&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img width="150" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+The Unloc Work app is available for Android on Google Play and iOS devices on the AppStore.
+<div class="store-row" style="display: flex; padding: 0 0 0 20px;">
+  <div class="store-column">
+    <a href='https://play.google.com/store/apps/details?id=ai.unloc.pro&utm_source=devdocs&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img width="150" alt='Get it on Google Play' style="flex: 33.33%;
+  padding: 5px;" src='https://www.vr.fi/cs/vr/img/d/1/1/googleplay_EN.png?blobnocache=false'/></a>
+  </div>
+  <div class="store-column">
+    <a href='https://itunes.apple.com/no/app/unloc-work/id1410680282?mt=8'><img width="150" alt='Download on the AppStore' style="flex: 33.33%;
+  padding: 5px;" src='https://simplematters.zendesk.com/hc/en-us/article_attachments/202646338/App_Store_icon_1.png'/></a>
+  </div>
+</div>
 
 ### HMAC
 
