@@ -1,5 +1,5 @@
 ---
-title: Unloc API Reference v1.0
+title: Unloc API Reference v1.0.1
 
 language_tabs:
   - code
@@ -115,8 +115,8 @@ Field  | Meaning
 ---------- | -------
 lockId | The ID of the lock that the key should be created for
 start | When the key should begin to be valid (ISO-8601 datetime)
-end | When the key should stop being valid (ISO-8601 datetime)
-msn | Mobile phone number of the recipient of the key, or null if the key is not assigned to a specific person. If `msn` is set to null, then the key can only be accessed via the Unloc Work app using App Switch.
+end | When the key should stop being valid (ISO-8601 datetime). Set `end` to `null` to make a never-expiring key.
+msn | Mobile phone number of the recipient of the key, or null if the key is not assigned to a specific person. If `msn` is set to `null`, then the key can only be accessed via the Unloc Work app using App Switch.
 
 ## Access Key via App Switch
 
@@ -152,6 +152,8 @@ The Unloc Work app is available for Android on Google Play and iOS devices on th
   padding: 5px;" src='https://simplematters.zendesk.com/hc/en-us/article_attachments/202646338/App_Store_icon_1.png'/></a>
   </div>
 </div>
+
+https://itunes.apple.com/no/app/unloc-work/id1410680282?mt=8
 
 ### HMAC
 
